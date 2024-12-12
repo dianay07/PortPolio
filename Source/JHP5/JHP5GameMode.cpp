@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "JHP5GameMode.h"
-#include "JHP5Character.h"
+#include "Character/JHP5Character.h"
 #include "UObject/ConstructorHelpers.h"
 
 AJHP5GameMode::AJHP5GameMode()

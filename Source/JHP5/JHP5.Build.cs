@@ -8,6 +8,17 @@ public class JHP5 : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicIncludePaths.Add(ModuleDirectory);
+
+        PublicDependencyModuleNames.AddRange(new string[]
+        {
+            "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
+			"UMG", "MotionWarping", "GameplayAbilities"
+        });
+
+		PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "GameplayTags", "GameplayTasks"
+        });
 	}
 }
