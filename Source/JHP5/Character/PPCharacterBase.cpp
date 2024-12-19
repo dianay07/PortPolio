@@ -3,8 +3,11 @@
 
 APPCharacterBase::APPCharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
+	Slot = CreateDefaultSubobject<USkeletalMeshComponent>("Slot");
+	Slot->SetupAttachment(GetMesh(), FName("SlotSocket"));
+	Slot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void APPCharacterBase::BeginPlay()

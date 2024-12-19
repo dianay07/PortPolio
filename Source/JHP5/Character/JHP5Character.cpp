@@ -293,7 +293,8 @@ void AJHP5Character::VaultMotionWarp()
 
 			FOnMontageEnded MontageEndedDelegate;
 			MontageEndedDelegate.BindUFunction(this, FName("SetMovementMode"));
-			//GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate, VaultMontage);
+			
+			GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate, VaultMontage);
 		}
 		else
 		{
