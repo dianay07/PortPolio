@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "JHP5Character.h"
+
+#include <AbilitySystemComponent.h>
+
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,6 +13,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "CharacterState/MainPlayerState.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -60,6 +64,31 @@ AJHP5Character::AJHP5Character()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AJHP5Character::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// 서버에 어빌리티 엑터 초기화
+	InitAbilityActionInfo();
+}
+
+void AJHP5Character::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// 클라이언트에 어빌리티 엑터 초기화
+	InitAbilityActionInfo();
+}
+
+void AJHP5Character::InitAbilityActionInfo()
+{
+	AMainPlayerState* MainPlayerState = GetPlayerState<AMainPlayerState>();
+	check(MainPlayerState); // ??
+	MainPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(MainPlayerState, this);
+	AbilitySystemComponent = MainPlayerState->GetAbilitySystemComponent();
+	AttributeSet = MainPlayerState->GetAttributeSet();
+}
+
 void AJHP5Character::BeginPlay()
 {
 	Super::BeginPlay();
@@ -94,7 +123,7 @@ void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJHP5Character::Move);
+		//EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJHP5Character::Move);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJHP5Character::Look);
@@ -294,7 +323,7 @@ void AJHP5Character::VaultMotionWarp()
 			FOnMontageEnded MontageEndedDelegate;
 			MontageEndedDelegate.BindUFunction(this, FName("SetMovementMode"));
 			
-			GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate, VaultMontage);
+			//GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate, VaultMontage);
 		}
 		else
 		{

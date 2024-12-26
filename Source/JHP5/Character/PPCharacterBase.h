@@ -5,15 +5,15 @@
 #include "GameFramework/Character.h"
 #include "PPCharacterBase.generated.h"
 
-class UAttributeSet;
 class UAbilitySystemComponent;
+class UAttributeSet;
 
 UCLASS(Abstract)
 class JHP5_API APPCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	// AbilitySystem Component
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -21,7 +21,6 @@ public:
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-protected:
 	UPROPERTY(EditAnywhere, Category = "Item")
 	TObjectPtr<USkeletalMeshComponent> Slot;
 

@@ -12,5 +12,6 @@ class JHP5_API APPEnemyCharacter : public APPCharacterBase
 public:
 	APPEnemyCharacter();
 	
-	
+protected:
+	virtual void BeginPlay() override;
 };

@@ -9,6 +9,15 @@
  {
  	AbilitySystemComponent = CreateDefaultSubobject<UPPAbilitySystemComponent>("AbilitySystemComponent");
     AbilitySystemComponent->SetIsReplicated(true);
+    AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
     AttributeSet = CreateDefaultSubobject<UPPAttributeSet>("AttributeSet");
+ }
+
+ void APPEnemyCharacter::BeginPlay()
+ {
+     Super::BeginPlay();
+     
+    
+     AbilitySystemComponent->InitAbilityActorInfo(this, this);
  }
