@@ -15,7 +15,7 @@ class JHP5_API AMainPlayerState : public APlayerState, public IAbilitySystemInte
 	
 protected:
 	// AbilitySystem Component
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
@@ -23,9 +23,13 @@ protected:
 
 public:
 	AMainPlayerState();
+
+	virtual void BeginPlay() override;
 	
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+
+
 
 };

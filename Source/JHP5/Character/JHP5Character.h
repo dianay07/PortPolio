@@ -89,6 +89,9 @@ protected:
 	void Sprint();
 	void StopSprint();
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetMaxWalkSpeed(float newSpeed);
+
 	UFUNCTION()
 	void DrainStamina();
 

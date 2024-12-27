@@ -12,6 +12,8 @@
 #include "InputActionValue.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "AbilitySystem/PPAbilitySystemComponent.h"
+
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,7 +32,7 @@ AJHP5Character::AJHP5Character()
 
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -102,6 +104,8 @@ void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AJHP5Character::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AJHP5Character::StopSprint);
 
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AJHP5Character::Attack);
+
 		EnhancedInputComponent->BindAction(VaultAction, ETriggerEvent::Started, this, &AJHP5Character::Vault);
 
 		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Ongoing, this, &AJHP5Character::StartGuard);
@@ -146,7 +150,16 @@ void AJHP5Character::Look(const FInputActionValue& Value)
 
 void AJHP5Character::Attack()
 {
-	
+	if (IsValid(AbilitySystemComponent) == false)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AbilitySystemComponent is nullptr"));
+		return;
+	}
+
+	if (IsValid(BasicAttack) == false)
+		return;
+
+	AbilitySystemComponent->TryActivateAbilityByClass(BasicAttack);
 }
 
 void AJHP5Character::StartGuard()
@@ -174,12 +187,35 @@ void AJHP5Character::Sprint()
 	// FTimerDelegate TimerDelegate = FTimerDelegate::CreateUObject(this, &AJHP5Character::DrainStamina);
 	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, true);
 
-	GetCharacterMovement()->MaxWalkSpeed = 750.0f;
+	if (HasAuthority())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 750.f;
+	}
+	else
+	{
+		ServerSetMaxWalkSpeed(750.f);
+	}
 }
 
 void AJHP5Character::StopSprint()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	if (HasAuthority())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	}
+	else
+	{
+		ServerSetMaxWalkSpeed(300.f);
+	}
+}
+
+void AJHP5Character::ServerSetMaxWalkSpeed_Implementation(float NewSpeed)
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (!IsValid(MovementComponent))
+		return;
+
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
 
 void AJHP5Character::DrainStamina()
@@ -299,5 +335,8 @@ void AJHP5Character::VaultMotionWarp()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("MotionWarpingComponent is not initialized!"));
 		}
+
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+		SetActorEnableCollision(true);
 	}
 }
