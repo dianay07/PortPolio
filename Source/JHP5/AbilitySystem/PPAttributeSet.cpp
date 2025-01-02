@@ -29,6 +29,9 @@ UPPAttributeSet::UPPAttributeSet()
 {
 	// consol -> showdebug abilitysystem
 	InitHealth(100.0f);
+	InitMaxHealth(100.0f);
+	InitStamina(70.0f);
+	InitMaxStamina(70.0f);
 }
 
 void UPPAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

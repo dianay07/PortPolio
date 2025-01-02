@@ -112,35 +112,35 @@ void AJHP5Character::NotifyControllerChanged()
 		}
 	}
 }
-
-void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		//EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJHP5Character::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJHP5Character::Look);
-
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AJHP5Character::Sprint);
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AJHP5Character::StopSprint);
-
-		EnhancedInputComponent->BindAction(VaultAction, ETriggerEvent::Started, this, &AJHP5Character::Vault);
-
-		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Ongoing, this, &AJHP5Character::StartGuard);
-		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Completed, this, &AJHP5Character::StopGuard);
-	}
-	else
-	{
-		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
-	}
-}
+//
+//void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+//{
+//	// Set up action bindings
+//	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+//		
+//		// Jumping
+//		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+//		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+//
+//		// Moving
+//		//EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJHP5Character::Move);
+//
+//		// Looking
+//		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJHP5Character::Look);
+//
+//		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AJHP5Character::Sprint);
+//		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AJHP5Character::StopSprint);
+//
+//		EnhancedInputComponent->BindAction(VaultAction, ETriggerEvent::Started, this, &AJHP5Character::Vault);
+//
+//		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Ongoing, this, &AJHP5Character::StartGuard);
+//		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Completed, this, &AJHP5Character::StopGuard);
+//	}
+//	else
+//	{
+//		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+//	}
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

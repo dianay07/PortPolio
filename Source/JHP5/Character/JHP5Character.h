@@ -119,7 +119,6 @@ public:
 
 protected:
 	virtual void NotifyControllerChanged() override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
 	// Return 

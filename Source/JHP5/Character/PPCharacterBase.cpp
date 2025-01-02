@@ -22,12 +22,6 @@ void APPCharacterBase::Tick(float DeltaTime)
 
 }
 
-void APPCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 UAbilitySystemComponent* APPCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
