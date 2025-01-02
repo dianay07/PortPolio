@@ -3,47 +3,36 @@
 
 #include "EffectActor.h"
 
+#include <AbilitySystemBlueprintLibrary.h>
 #include <AbilitySystemComponent.h>
-#include <AbilitySystemInterface.h>
-
-#include "AbilitySystem/PPAttributeSet.h"
-#include "Components/SphereComponent.h"
-
 
 AEffectActor::AEffectActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	SetRootComponent(Mesh);
-
-	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
-	Sphere->SetupAttachment(Mesh);
+	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
 }
 
-void AEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// const 있으니까 맞는데 임의로 수를 변경하는짓은 하면안됨
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
-	{
-		const UPPAttributeSet* AttributeSet = Cast<UPPAttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UPPAttributeSet::StaticClass()));
-
-		UPPAttributeSet* MutableAttributeSet = const_cast<UPPAttributeSet*>(AttributeSet);
-		MutableAttributeSet->SetHealth(AttributeSet->GetHealth() + 25.f);
-		Destroy();
-	}
-}
-
-void AEffectActor::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-}
 
 void AEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AEffectActor::OnOverlap);
-	Sphere->OnComponentEndOverlap.AddDynamic(this, &AEffectActor::EndOverlap);
+void AEffectActor::ApplyEffectToTarget(AActor* Target, TSubclassOf<UGameplayEffect> GameplayEffectClass)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
+	if (TargetASC == nullptr) return;
+
+	// 1. ABS 성요소 만들기
+	// 2. 가져온 ABS로 EffectContext 만들기
+	// 3. 소스 객체 추가 함수 호출
+	// 4. 
+
+	check(GameplayEffectClass);
+	FGameplayEffectContextHandle EffectContextHandle = TargetASC->MakeEffectContext();
+	// 약한참조 생성으로 GC에 안걸림
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, 1.f, EffectContextHandle);
+	TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 }

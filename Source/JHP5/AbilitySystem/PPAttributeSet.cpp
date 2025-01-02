@@ -28,7 +28,7 @@ void UPPAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStami
 UPPAttributeSet::UPPAttributeSet()
 {
 	// consol -> showdebug abilitysystem
-	InitHealth(100.0f);
+	InitHealth(70.0f);
 	InitMaxHealth(100.0f);
 	InitStamina(70.0f);
 	InitMaxStamina(70.0f);
