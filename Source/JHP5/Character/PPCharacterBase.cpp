@@ -31,22 +31,12 @@ void APPCharacterBase::OnRep_PlayerState()
 
 void APPCharacterBase::InitAbilityActorInfo()
 {
-	AMainPlayerState* PS = GetPlayerState<AMainPlayerState>();
-	check(PS);
 
-	AbilitySystemComponent = PS->GetAbilitySystemComponent();
-	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 }
 
 void APPCharacterBase::InitAbility()
 {
-	if (IsValid(AbilitySystemComponent) == false)
-		return;
-
-	if (BasicAttack == nullptr)
-		return;
 	
-	AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(BasicAttack, 0, 0, this));
 }
 
 void APPCharacterBase::Tick(float DeltaTime)

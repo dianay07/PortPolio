@@ -13,12 +13,12 @@ public class JHP5 : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[]
         {
             "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
-			"UMG", "MotionWarping", "GameplayAbilities"
+			"UMG", "MotionWarping"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[]
         {
-            "GameplayTags", "GameplayTasks"
+            "GameplayTags", "GameplayTasks", "GameplayAbilities"
         });
 	}
 }

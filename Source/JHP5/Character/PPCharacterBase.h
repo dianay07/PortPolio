@@ -42,7 +42,5 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayAbility, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UGameplayAbility> BasicAttack;
+
 };

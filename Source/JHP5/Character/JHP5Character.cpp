@@ -11,8 +11,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Kismet/KismetSystemLibrary.h"
-
+#include "CharacterState/MainPlayerState.h"
 #include "AbilitySystem/PPAbilitySystemComponent.h"
+#include "AbilitySystem/PPAttributeSet.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -69,6 +70,20 @@ void AJHP5Character::BeginPlay()
 	// TODO 시작시 세팅
 }
 
+void AJHP5Character::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilityActorInfo();
+}
+
+void AJHP5Character::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilityActorInfo();
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -115,6 +130,22 @@ void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void AJHP5Character::InitAbilityActorInfo()
+{
+
+}
+
+void AJHP5Character::InitAbility()
+{
+	if (IsValid(AbilitySystemComponent) == false)
+		return;
+
+	if (BasicAttack == nullptr)
+		return;
+
+	AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(BasicAttack, 0, 0, this));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
