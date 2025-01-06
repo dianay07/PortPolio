@@ -1,5 +1,6 @@
 #include "Character/PPCharacterBase.h"
-
+#include "CharacterState/MainPlayerState.h"
+#include "AbilitySystem/PPAbilitySystemComponent.h"
 
 APPCharacterBase::APPCharacterBase()
 {
@@ -10,6 +11,31 @@ APPCharacterBase::APPCharacterBase()
 void APPCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
+}
+
+void APPCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilityActorInfo();
+	InitAbility();
+}
+
+void APPCharacterBase::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilityActorInfo();
+}
+
+void APPCharacterBase::InitAbilityActorInfo()
+{
+
+}
+
+void APPCharacterBase::InitAbility()
+{
 	
 }
 

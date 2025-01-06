@@ -11,6 +11,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "CharacterState/MainPlayerState.h"
+#include "AbilitySystem/PPAbilitySystemComponent.h"
+#include "AbilitySystem/PPAttributeSet.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -30,7 +33,7 @@ AJHP5Character::AJHP5Character()
 
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -65,6 +68,20 @@ void AJHP5Character::BeginPlay()
 	Super::BeginPlay();
 
 	// TODO 시작시 세팅
+}
+
+void AJHP5Character::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilityActorInfo();
+}
+
+void AJHP5Character::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilityActorInfo();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -102,6 +119,8 @@ void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AJHP5Character::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AJHP5Character::StopSprint);
 
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AJHP5Character::Attack);
+
 		EnhancedInputComponent->BindAction(VaultAction, ETriggerEvent::Started, this, &AJHP5Character::Vault);
 
 		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Ongoing, this, &AJHP5Character::StartGuard);
@@ -111,6 +130,22 @@ void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void AJHP5Character::InitAbilityActorInfo()
+{
+
+}
+
+void AJHP5Character::InitAbility()
+{
+	if (IsValid(AbilitySystemComponent) == false)
+		return;
+
+	if (BasicAttack == nullptr)
+		return;
+
+	AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(BasicAttack, 0, 0, this));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +181,16 @@ void AJHP5Character::Look(const FInputActionValue& Value)
 
 void AJHP5Character::Attack()
 {
-	
+	if (IsValid(AbilitySystemComponent) == false)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AbilitySystemComponent is nullptr"));
+		return;
+	}
+
+	if (IsValid(BasicAttack) == false)
+		return;
+
+	AbilitySystemComponent->TryActivateAbilityByClass(BasicAttack);
 }
 
 void AJHP5Character::StartGuard()
@@ -174,12 +218,35 @@ void AJHP5Character::Sprint()
 	// FTimerDelegate TimerDelegate = FTimerDelegate::CreateUObject(this, &AJHP5Character::DrainStamina);
 	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, true);
 
-	GetCharacterMovement()->MaxWalkSpeed = 750.0f;
+	if (HasAuthority())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 750.f;
+	}
+	else
+	{
+		ServerSetMaxWalkSpeed(750.f);
+	}
 }
 
 void AJHP5Character::StopSprint()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	if (HasAuthority())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	}
+	else
+	{
+		ServerSetMaxWalkSpeed(300.f);
+	}
+}
+
+void AJHP5Character::ServerSetMaxWalkSpeed_Implementation(float NewSpeed)
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (!IsValid(MovementComponent))
+		return;
+
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
 
 void AJHP5Character::DrainStamina()
@@ -299,5 +366,8 @@ void AJHP5Character::VaultMotionWarp()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("MotionWarpingComponent is not initialized!"));
 		}
+
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+		SetActorEnableCollision(true);
 	}
 }

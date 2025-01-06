@@ -72,7 +72,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 	/* Basic */
 protected:
 	void Move(const FInputActionValue& Value);
@@ -88,6 +89,9 @@ protected:
 	FTimerHandle TimerHandle;
 	void Sprint();
 	void StopSprint();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetMaxWalkSpeed(float newSpeed);
 
 	UFUNCTION()
 	void DrainStamina();
@@ -115,8 +119,17 @@ protected:
 	virtual void NotifyControllerChanged() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void InitAbilityActorInfo() override;
+	virtual void InitAbility() override;
+
+
 public:
 	// Return 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return SpringArmComponent; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return CameraComponent; }
+
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayAbility, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayAbility> BasicAttack;
 };

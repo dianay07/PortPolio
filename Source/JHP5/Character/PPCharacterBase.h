@@ -7,6 +7,7 @@
 
 class UAttributeSet;
 class UAbilitySystemComponent;
+class UGameplayAbility;
 
 UCLASS()
 class JHP5_API APPCharacterBase : public ACharacter, public IAbilitySystemInterface
@@ -26,6 +27,12 @@ public:
 
 protected: 
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+
+protected:
+	virtual void InitAbilityActorInfo();
+	virtual void InitAbility();
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -34,4 +41,6 @@ public:
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+
+
 };
