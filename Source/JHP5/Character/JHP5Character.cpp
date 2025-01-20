@@ -75,6 +75,7 @@ void AJHP5Character::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
+	//InitAbility();
 }
 
 void AJHP5Character::OnRep_PlayerState()
@@ -119,7 +120,8 @@ void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AJHP5Character::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AJHP5Character::StopSprint);
 
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AJHP5Character::Attack);
+		EnhancedInputComponent->BindAction(LightAttackAction, ETriggerEvent::Started, this, &AJHP5Character::LightAttack);
+		EnhancedInputComponent->BindAction(HeavyAttackAction, ETriggerEvent::Started, this, &AJHP5Character::HeavyAttack);
 
 		EnhancedInputComponent->BindAction(VaultAction, ETriggerEvent::Started, this, &AJHP5Character::Vault);
 
@@ -134,6 +136,16 @@ void AJHP5Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void AJHP5Character::InitAbilityActorInfo()
 {
+	AMainPlayerState* PS = GetPlayerState<AMainPlayerState>();
+	if (IsValid(PS) == false)
+		return;
+
+	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+	if (IsValid(ASC) == false)
+		return;
+
+	AbilitySystemComponent = ASC;
+	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 
 }
 
@@ -142,10 +154,21 @@ void AJHP5Character::InitAbility()
 	if (IsValid(AbilitySystemComponent) == false)
 		return;
 
-	if (BasicAttack == nullptr)
-		return;
+	for (auto Ability : LightAttacks)
+	{
+		if (IsValid(Ability) == false)
+			continue;
 
-	AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(BasicAttack, 0, 0, this));
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 0, 0, this));
+	}
+
+	for (auto Ability : HeavyAttacks)
+	{
+		if (IsValid(Ability) == false)
+			continue;
+
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 0, 0, this));
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +202,7 @@ void AJHP5Character::Look(const FInputActionValue& Value)
 	}
 }
 
-void AJHP5Character::Attack()
+void AJHP5Character::LightAttack()
 {
 	if (IsValid(AbilitySystemComponent) == false)
 	{
@@ -187,10 +210,30 @@ void AJHP5Character::Attack()
 		return;
 	}
 
-	if (IsValid(BasicAttack) == false)
-		return;
+	FGameplayTag LightAttackTag = FGameplayTag::RequestGameplayTag(FName("Player.Attack.LightAttack"));
 
-	AbilitySystemComponent->TryActivateAbilityByClass(BasicAttack);
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(LightAttackTag);
+
+	bool result = AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+
+	//AbilitySystemComponent->TryActivateAbilityByClass(BasicAttack);
+}
+
+void AJHP5Character::HeavyAttack()
+{
+	if (IsValid(AbilitySystemComponent) == false)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AbilitySystemComponent is nullptr"));
+		return;
+	}
+
+	FGameplayTag LightAttackTag = FGameplayTag::RequestGameplayTag(FName("Player.Attack.HeavyAttack"));
+
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(LightAttackTag);
+
+	bool result = AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
 }
 
 void AJHP5Character::StartGuard()

@@ -17,9 +17,9 @@ class JHP5_API UPPGameplayAbilityBase : public UGameplayAbility
 	
 public:
 	
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* OwnerInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = MontageAbility)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MontageAbility)
 	TObjectPtr<UAnimMontage> 	MontageToPlay;
 
 	UPROPERTY(EditDefaultsOnly, Category = MontageAbility)
